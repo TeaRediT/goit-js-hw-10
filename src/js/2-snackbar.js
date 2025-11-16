@@ -9,14 +9,20 @@ const inputsState = form.elements.state;
 form.addEventListener('submit', e => {
   e.preventDefault();
   const delay = inputDelay.value;
-  const valid = inputsState[0].checked === true;
+  //radios
+  const fulFilledRadio = Array.from(inputsState).find(
+    el => el.checked && el.value === 'fulfilled'
+  );
+  const rejectedRadio = Array.from(inputsState).find(
+    el => el.checked && el.value === 'rejected'
+  );
 
   const promise = new Promise((res, rej) => {
     setTimeout(() => {
-      if (valid) {
-        res(`✅ Fulfilled promise in ${delay}ms`);
-      } else {
-        rej(`❌ Rejected promise in ${delay}ms`);
+      if (fulFilledRadio) {
+        res(delay);
+      } else if (rejectedRadio) {
+        rej(delay);
       }
     }, delay);
   });
@@ -24,7 +30,7 @@ form.addEventListener('submit', e => {
   promise
     .then(res => {
       iziToast.show({
-        message: `${res}`,
+        message: `✅ Fulfilled promise in ${res}ms`,
         color: 'green',
         position: 'topRight',
         close: false,
@@ -33,7 +39,7 @@ form.addEventListener('submit', e => {
     })
     .catch(rej => {
       iziToast.show({
-        message: `${rej}`,
+        message: `❌ Rejected promise in ${rej}ms`,
         color: 'red',
         position: 'topRight',
         close: false,
